@@ -1,0 +1,27 @@
+{
+  "name": "anicdotik",
+  "version": "1.0.0",
+  "description": "api jokes",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f1065784/jokes.git"
+  },
+  "author": "David",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/f1065784/jokes/issues"
+  },
+  "homepage": "https://github.com/f1065784/jokes#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
