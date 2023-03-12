@@ -1,13 +1,14 @@
 const path = require("path");
 const http = require("http");
 const fs = require("fs");
+const url = require("url");
 let server = http.createServer(function(request,response){
-   if(request.url = "/api/joke" && request.method == "GET"){
+   if(request.url == "/api/joke" && request.method == "GET"){
     let allJokes = getAllJokes();
     response.writeHead(200,{"Content-type":"text/json"});
     response.end(JSON.stringify(allJokes));
    } 
-  else if(request.url = "/api/joke" && request.method == "POST"){
+  else if(request.url == "/api/joke" && request.method == "POST"){
    let data = '';
    request.on('data', function (chunk){
       data += chunk;
@@ -16,11 +17,59 @@ let server = http.createServer(function(request,response){
       addJoke(data);
    })
    response.end();
+   }else
+    if(request.url.startsWith('/api/like')){
+      const params = url.parse(request.url, true).query;
+      if(isNaN(params.id)){
+         response.writeHead(400);
+         response.end();
+
+      }
+     const pathToData = path.join(__dirname,"data");
+     const numberOfJokes = fs.readdirSync(pathToData).length;
+     if(params.id<0 || params.id >= numberOfJokes){
+      response.writeHead(400);
+      response.end();
+     }
+     let pathToFile = path.join(pathToData, `${params.id}.json`);
+     let joke = JSON.parse(fs.readFileSync(pathToFile, 'utf-8'));
+     
+     joke.likes++;
+     console.log(joke);
+     fs.writeFileSync(pathToFile, JSON.stringify(joke));
+     response.writeHead(200);
+     response.end();
+   }else
+   if(request.url.startsWith('/api/dislike')){
+     const params = url.parse(request.url, true).query;
+     if(isNaN(params.id)){
+        response.writeHead(400);
+        response.end();
+
+     }
+    const pathToData = path.join(__dirname,"data");
+    const numberOfJokes = fs.readdirSync(pathToData).length;
+    if(params.id<0 || params.id >= numberOfJokes){
+     response.writeHead(400);
+     response.end();
+    }
+    let pathToFile = path.join(pathToData, `${params.id}.json`);
+    let joke = JSON.parse(fs.readFileSync(pathToFile, 'utf-8'));
+    
+    joke.dislikes++;
+    console.log(joke);
+    fs.writeFileSync(pathToFile, JSON.stringify(joke));
+    response.writeHead(200);
+    response.end();
+  }
+   else{
+      response.writeHead(404);
+      response.end();
    }
 })
 const port = 6000;
 server.listen(port);
-function getAllJokes(request,response){
+function getAllJokes(){
 let arrayOfJokes = [];
 let pathToData = path.join(__dirname,"data");
 let data = fs.readdirSync(pathToData);
